@@ -26,7 +26,7 @@ def render_dashboard():
   '''
   code_availability_statement = '''
   Source code for the website available at <a target="_blank" href="https://github.com/lubianat/women_in_metabolomics">
-            https://github.com/lubianat/women_in_metabolomics </a>.
+            https://github.com/lubianat/women_in_metabolomics </a>
   '''
 
   scholia_credit_statement = '''
@@ -34,12 +34,17 @@ SPARQL queries adapted from <a target="_blank" href="https://scholia.toolforge.o
   '''
 
   creator_statement = '''
+ Based on a curation by <a target="_blank" href="https://legido-quigley-lab.com/"> Prof. Cristina Legido-Quigley</a> and collaborators at <a href="https://docs.google.com/document/d/1-GUNDm0ul0TRkkETYa6U1tjnMJdxwKRPqBftN2gGVAo/edit">
+ this Google Docs </a>
+ </p>
+ <p>
  Dashboard  by <a target="_blank" href="https://www.wikidata.org/wiki/User:TiagoLubiana">TiagoLubiana</a>
   '''
 
   site_title = "Women in Metabolomics"
-  site_subtitle = "A map via Wikidata"
-
+  site_subtitle = '''A map via Wikidata from data curated in <a target="_blank" href="https://docs.google.com/document/d/1-GUNDm0ul0TRkkETYa6U1tjnMJdxwKRPqBftN2gGVAo/edit?usp=sharing">
+  this Google Docs </a>
+'''
   html = """
 <!DOCTYPE html>
 <html>
