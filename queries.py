@@ -2,15 +2,23 @@ import urllib.parse
 
 
 
-def get_work_selector_for_covid_19():
-  selector = """ 
-  VALUES ?topic_of_interest { wd:Q84263196 wd:Q82069695 }
-  ?work wdt:P50 ?author.
-  ?author wdt:P101 wd:Q12149006.
-  ?author wdt:P21 wd:Q6581072.
-  """
+def get_selector():
+    """
+    The selector that decides the scope of the dashboard. It MUST have the keywords
+    ?work and ?author. 
+    The specific works and authors can be added by adapting the query on WDQS:
+    https://w.wiki/3Cmd
+    After crafting it on WDQS, transclude the clauses inside "WHERE{} to here, 
+    omitting the "SERVICE wikibase..." line.
+    """
 
-  return(selector)
+    selector = """ 
+    ?work wdt:P50 ?author.
+    ?author wdt:P101 wd:Q12149006.
+    ?author wdt:P21 wd:Q6581072.
+    """
+
+    return(selector)
 
 
 
@@ -28,7 +36,7 @@ def get_query_url_for_articles():
   ?journal ?journalLabel
   (GROUP_CONCAT(DISTINCT ?author_label; separator=", ") AS ?authores)
   WHERE {
-  """ + get_work_selector_for_covid_19() + """
+  """ + get_selector() + """
   OPTIONAL {
     ?author rdfs:label ?author_label_ . FILTER (LANG(?author_label_) = 'en')
   }
@@ -56,7 +64,7 @@ def get_topics_as_table():
   WITH {
     SELECT (COUNT(?work) AS ?count) ?theme (SAMPLE(?work) AS ?example_work)
     WHERE {
-      """ + get_work_selector_for_covid_19() + """
+      """ + get_selector() + """
       ?work wdt:P921 ?theme .
     }
     GROUP BY ?theme
@@ -84,7 +92,7 @@ def get_query_url_for_venues():
       ?journal
       (GROUP_CONCAT(DISTINCT ?topic_label; separator=", ") AS ?topics)
     WHERE {
-      """ + get_work_selector_for_covid_19() + """
+      """ + get_selector() + """
       ?work wdt:P1433 ?journal .
       OPTIONAL {
         ?journal wdt:P921 ?topic .
@@ -111,7 +119,7 @@ def get_query_url_for_locations():
   SELECT ?organization ?organizationLabel ?geo ?count ?layer
   WITH {
     SELECT DISTINCT ?organization ?geo (COUNT(DISTINCT ?work) AS ?count) WHERE {
-      """ + get_work_selector_for_covid_19() + """
+      """ + get_selector() + """
       ?author ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* ?organization . 
       ?organization wdt:P625 ?geo .
     }
@@ -135,7 +143,7 @@ def get_query_url_for_authors():
   query_7 = """
   #defaultView:Table
   SELECT (COUNT(?work) AS ?article_count) ?author ?authorLabel ?orcids  ?organizationLabel  ?countryLabel WHERE {
-    """ + get_work_selector_for_covid_19() + """
+    """ + get_selector() + """
   OPTIONAL { ?author ( wdt:P108 | wdt:P463 | wdt:P1416 ) ?organization .
            OPTIONAL { ?organization wdt:P17 ?country . }               
            }
