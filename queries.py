@@ -7,21 +7,62 @@ with open("config.yaml") as f2:
 
 yaml_file = config
 
+def format_with_prefix(list_of_qids):
+    list_with_prefix = ["wd:" + i for i in list_of_qids]
+    return(" ".join(list_with_prefix))
+
 def get_selector(yaml_file):
     """
     The selector that decides the scope of the dashboard. It MUST have the keywords
     ?work and ?author. 
-    The specific works and authors can be added by adapting the query on WDQS:
+    You can override everything here by adapting the query on WDQS:
     https://w.wiki/3Cmd
-    After crafting it on WDQS, transclude the clauses inside "WHERE{} to here, 
-    omitting the "SERVICE wikibase..." line.
     """
 
-    selector = """ 
+    fields_of_work = yaml_file["restriction"]["author_area"]
+
+    if fields_of_work is not None:
+        field_of_work_selector = """
+        VALUES ?field_of_work {""" + format_with_prefix(fields_of_work) + """}
+        ?author wdt:P101 ?field_of_work.
+        """
+    else: field_of_work_selector = ""
+
+    topic_of_work = yaml_file["restriction"]["topic_of_work"]
+
+    if topic_of_work is not None:
+        topic_of_work_selector = """
+        VALUES ?topics {""" + format_with_prefix(topic_of_work) + """}
+        ?work wdt:P921/wdt:P279* ?topics.
+        """
+    else: topic_of_work_selector = ""
+
+    region = yaml_file["restriction"]["institution_region"]
+
+    if region is not None:
+        region_selector = """
+        VALUES ?regions {""" + format_with_prefix(region) + """}
+        ?country wdt:P361* ?regions.
+        ?author ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* ?organization . 
+        ?organization wdt:P17 ?country.
+        """
+    else: region_selector = ""
+
+    gender = yaml_file["restriction"]["gender"]
+    if gender is not None:
+        gender_selector = """
+        VALUES ?regions {""" + format_with_prefix(gender) + """}
+        ?author wdt:P21 wd:Q6581072.
+        """
+    else: gender_selector = ""
+
+    selector = field_of_work_selector + \
+    topic_of_work_selector + \
+    region_selector + \
+    gender_selector + """
     ?work wdt:P50 ?author.
-    ?author wdt:P101 wd:Q12149006.
-    ?author wdt:P21 wd:Q6581072.
     """
+    print(selector)
 
     return(selector)
 

@@ -30,7 +30,6 @@ query_options = {
 with open("index.html", "w") as f:
     with open("config.yaml") as f2:
         config = yaml.load(f2, Loader=yaml.FullLoader)
-        print(config)
 
     sections_to_add = []
 

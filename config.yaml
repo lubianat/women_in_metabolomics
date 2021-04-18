@@ -5,6 +5,20 @@ subtitle: >
   <a target="_blank" href="https://docs.google.com/document/d/1-GUNDm0ul0TRkkETYa6U1tjnMJdxwKRPqBftN2gGVAo/edit?usp=sharing">
   this Google Docs </a>
 
+restriction:
+  # - Remove all options for no restriction
+  #  (you can also remove this section and edit the query directly on queries.py)
+  #   Categories are united by AND (i.e. will need to match both author area and institution region)
+  # Qids inside categoy are united by OR(i.e. will select works that match any of the listed topics)
+  author_area:
+    - Q12149006 # Metabolomics
+  topic_of_work:
+  #  - Q12174 # Example: Obesity
+  institution_region:  
+  #  - Q12585 # Example: Latin America (works for countries and beyond)
+  gender:
+   - Q6581072 # Female
+
 sections:
 # - the name of the query: the label of the query
 # Comment out to remove from dashboard;
