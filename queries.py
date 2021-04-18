@@ -1,8 +1,13 @@
 import urllib.parse
+import yaml
 
+with open("config.yaml") as f2:
+    config = yaml.load(f2, Loader=yaml.FullLoader)
+    print(config)
 
+yaml_file = config
 
-def get_selector():
+def get_selector(yaml_file):
     """
     The selector that decides the scope of the dashboard. It MUST have the keywords
     ?work and ?author. 
@@ -36,7 +41,7 @@ def get_query_url_for_articles():
   ?journal ?journalLabel
   (GROUP_CONCAT(DISTINCT ?author_label; separator=", ") AS ?authores)
   WHERE {
-  """ + get_selector() + """
+  """ + get_selector(yaml_file) + """
   OPTIONAL {
     ?author rdfs:label ?author_label_ . FILTER (LANG(?author_label_) = 'en')
   }
@@ -64,7 +69,7 @@ def get_topics_as_table():
   WITH {
     SELECT (COUNT(?work) AS ?count) ?theme (SAMPLE(?work) AS ?example_work)
     WHERE {
-      """ + get_selector() + """
+      """ + get_selector(yaml_file) + """
       ?work wdt:P921 ?theme .
     }
     GROUP BY ?theme
@@ -92,7 +97,7 @@ def get_query_url_for_venues():
       ?journal
       (GROUP_CONCAT(DISTINCT ?topic_label; separator=", ") AS ?topics)
     WHERE {
-      """ + get_selector() + """
+      """ + get_selector(yaml_file) + """
       ?work wdt:P1433 ?journal .
       OPTIONAL {
         ?journal wdt:P921 ?topic .
@@ -119,7 +124,7 @@ def get_query_url_for_locations():
   SELECT ?organization ?organizationLabel ?geo ?count ?layer
   WITH {
     SELECT DISTINCT ?organization ?geo (COUNT(DISTINCT ?work) AS ?count) WHERE {
-      """ + get_selector() + """
+      """ + get_selector(yaml_file) + """
       ?author ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* ?organization . 
       ?organization wdt:P625 ?geo .
     }
@@ -143,7 +148,7 @@ def get_query_url_for_authors():
   query_7 = """
   #defaultView:Table
   SELECT (COUNT(?work) AS ?article_count) ?author ?authorLabel ?orcids  ?organizationLabel  ?countryLabel WHERE {
-    """ + get_selector() + """
+    """ + get_selector(yaml_file) + """
   OPTIONAL { ?author ( wdt:P108 | wdt:P463 | wdt:P1416 ) ?organization .
            OPTIONAL { ?organization wdt:P17 ?country . }               
            }
