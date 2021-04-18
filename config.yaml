@@ -1,0 +1,50 @@
+title: Women in Metabolomics
+
+subtitle: >
+  A map via Wikidata from data curated in 
+  <a target="_blank" href="https://docs.google.com/document/d/1-GUNDm0ul0TRkkETYa6U1tjnMJdxwKRPqBftN2gGVAo/edit?usp=sharing">
+  this Google Docs </a>
+
+restriction:
+  # - Remove all options for no restriction
+  #  (you can also remove this section and edit the query directly on queries.py)
+  #   Categories are united by AND (i.e. will need to match both author area and institution region)
+  # Qids inside categoy are united by OR(i.e. will select works that match any of the listed topics)
+  author_area:
+    - Q12149006 # Metabolomics
+  topic_of_work:
+  #  - Q12174 # Example: Obesity
+  institution_region:  
+  #  - Q12585 # Example: Latin America (works for countries and beyond)
+  gender:
+   - Q6581072 # Female
+
+sections:
+# - the name of the query: the label of the query
+# Comment out to remove from dashboard;
+# Change the order to change the order on the dashboard
+  - 100 most recent articles : 100 most recent articles
+  - map of institutions: Map of institutions
+  - list of authors: List of authors
+  - list of topics: List of related topics
+  - list of journals: List of venues where articles were published
+
+license_statement: >
+  This content is available under a 
+  <a target="_blank" href="https://creativecommons.org/publicdomain/zero/1.0/"> 
+  Creative Commons CC0</a> license.
+code_availability_statement: >
+  Source code for the website available at 
+  <a target="_blank" href="https://github.com/lubianat/women_in_metabolomics">
+  https://github.com/lubianat/women_in_metabolomics
+  </a>
+scholia_credit: >
+  SPARQL queries adapted from 
+  <a target="_blank" href="https://scholia.toolforge.org/">Scholia</a>
+
+creator_credit: >
+ Based on a curation by <a target="_blank" href="https://legido-quigley-lab.com/"> Prof. Cristina Legido-Quigley</a> and collaborators at <a href="https://docs.google.com/document/d/1-GUNDm0ul0TRkkETYa6U1tjnMJdxwKRPqBftN2gGVAo/edit">
+ this Google Docs </a>
+ </p>
+ <p>
+ Dashboard  by <a target="_blank" href="https://www.wikidata.org/wiki/User:TiagoLubiana">TiagoLubiana</a>
