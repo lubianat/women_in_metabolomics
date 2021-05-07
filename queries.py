@@ -7,9 +7,11 @@ with open("config.yaml") as f2:
 
 yaml_file = config
 
+
 def format_with_prefix(list_of_qids):
     list_with_prefix = ["wd:" + i for i in list_of_qids]
-    return(" ".join(list_with_prefix))
+    return " ".join(list_with_prefix)
+
 
 def get_selector(yaml_file):
     """
@@ -22,57 +24,100 @@ def get_selector(yaml_file):
     fields_of_work = yaml_file["restriction"]["author_area"]
 
     if fields_of_work is not None:
-        field_of_work_selector = """
-        VALUES ?field_of_work {""" + format_with_prefix(fields_of_work) + """}
+        field_of_work_selector = (
+            """
+        VALUES ?field_of_work {"""
+            + format_with_prefix(fields_of_work)
+            + """}
         ?author wdt:P101 ?field_of_work.
         """
-    else: field_of_work_selector = ""
+        )
+    else:
+        field_of_work_selector = ""
 
     topic_of_work = yaml_file["restriction"]["topic_of_work"]
 
     if topic_of_work is not None:
-        topic_of_work_selector = """
-        VALUES ?topics {""" + format_with_prefix(topic_of_work) + """}
+        topic_of_work_selector = (
+            """
+        VALUES ?topics {"""
+            + format_with_prefix(topic_of_work)
+            + """}
         ?work wdt:P921/wdt:P279* ?topics.
         """
-    else: topic_of_work_selector = ""
+        )
+    else:
+        topic_of_work_selector = ""
 
     region = yaml_file["restriction"]["institution_region"]
 
     if region is not None:
-        region_selector = """
-        VALUES ?regions {""" + format_with_prefix(region) + """}
+        region_selector = (
+            """
+        VALUES ?regions {"""
+            + format_with_prefix(region)
+            + """}
         ?country wdt:P361* ?regions.
         ?author ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* ?organization . 
         ?organization wdt:P17 ?country.
         """
-    else: region_selector = ""
+        )
+    else:
+        region_selector = ""
 
     gender = yaml_file["restriction"]["gender"]
     if gender is not None:
-        gender_selector = """
-        VALUES ?regions {""" + format_with_prefix(gender) + """}
+        gender_selector = (
+            """
+        VALUES ?regions {"""
+            + format_with_prefix(gender)
+            + """}
         ?author wdt:P21 wd:Q6581072.
         """
-    else: gender_selector = ""
+        )
+    else:
+        gender_selector = ""
 
-    selector = field_of_work_selector + \
-    topic_of_work_selector + \
-    region_selector + \
-    gender_selector + """
+    event = yaml_file["restriction"]["event"]
+    if event is not None:
+
+        # P823 - speaker
+        # P664 - organizer
+        # P1334 - has participant
+        # ^P710 - inverse of (participated in)
+        event_selector = (
+            """
+        VALUES ?event {"""
+            + format_with_prefix(event)
+            + """}
+        ?event wdt:P823 |  wdt:P664 | wdt:P1344 | ^wdt:P710 ?author.
+        """
+        )
+    else:
+        event_selector = ""
+
+    selector = (
+        field_of_work_selector
+        + topic_of_work_selector
+        + region_selector
+        + event_selector
+        + gender_selector
+        + """
     ?work wdt:P50 ?author.
     """
+    )
     print(selector)
 
-    return(selector)
-
+    return selector
 
 
 def render_url(query):
-  return "https://query.wikidata.org/embed.html#" + urllib.parse.quote(query, safe='')
-  
+    return "https://query.wikidata.org/embed.html#" + urllib.parse.quote(query, safe="")
+
+
 def get_query_url_for_articles():
-  query = """
+    query = (
+        """
 
   #defaultView:Table
   SELECT
@@ -82,7 +127,9 @@ def get_query_url_for_articles():
   ?journal ?journalLabel
   (GROUP_CONCAT(DISTINCT ?author_label; separator=", ") AS ?authores)
   WHERE {
-  """ + get_selector(yaml_file) + """
+  """
+        + get_selector(yaml_file)
+        + """
   OPTIONAL {
     ?author rdfs:label ?author_label_ . FILTER (LANG(?author_label_) = 'en')
   }
@@ -98,11 +145,14 @@ def get_query_url_for_articles():
   LIMIT 100 
 
   """
-  
-  return render_url(query)
+    )
+
+    return render_url(query)
+
 
 def get_topics_as_table():
-  query_3 = """
+    query_3 = (
+        """
 
 
   #defaultView:Table
@@ -110,7 +160,9 @@ def get_topics_as_table():
   WITH {
     SELECT (COUNT(?work) AS ?count) ?theme (SAMPLE(?work) AS ?example_work)
     WHERE {
-      """ + get_selector(yaml_file) + """
+      """
+        + get_selector(yaml_file)
+        + """
       ?work wdt:P921 ?theme .
     }
     GROUP BY ?theme
@@ -123,10 +175,13 @@ def get_topics_as_table():
   LIMIT 100
 
   """
-  return render_url(query_3) 
+    )
+    return render_url(query_3)
+
 
 def get_query_url_for_venues():
-  query_4 = """
+    query_4 = (
+        """
   # Venue statistics for a collection
   SELECT
     ?count (SAMPLE(?short_name_) AS ?short_name)
@@ -138,7 +193,9 @@ def get_query_url_for_venues():
       ?journal
       (GROUP_CONCAT(DISTINCT ?topic_label; separator=", ") AS ?topics)
     WHERE {
-      """ + get_selector(yaml_file) + """
+      """
+        + get_selector(yaml_file)
+        + """
       ?work wdt:P1433 ?journal .
       OPTIONAL {
         ?journal wdt:P921 ?topic .
@@ -155,17 +212,22 @@ def get_query_url_for_venues():
   ORDER BY DESC(?count)
 
   """
-  return render_url(query_4) 
+    )
+    return render_url(query_4)
+
 
 def get_query_url_for_locations():
-  query_5 = """
+    query_5 = (
+        """
 
 
   #defaultView:Map
   SELECT ?organization ?organizationLabel ?geo ?count ?layer
   WITH {
     SELECT DISTINCT ?organization ?geo (COUNT(DISTINCT ?work) AS ?count) WHERE {
-      """ + get_selector(yaml_file) + """
+      """
+        + get_selector(yaml_file)
+        + """
       ?author ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* ?organization . 
       ?organization wdt:P625 ?geo .
     }
@@ -182,14 +244,18 @@ def get_query_url_for_locations():
 
 
   """
-  return render_url(query_5)
+    )
+    return render_url(query_5)
 
 
 def get_query_url_for_authors():
-  query_7 = """
+    query_7 = (
+        """
   #defaultView:Table
   SELECT (COUNT(?work) AS ?article_count) ?author ?authorLabel ?orcids  ?organizationLabel  ?countryLabel WHERE {
-    """ + get_selector(yaml_file) + """
+    """
+        + get_selector(yaml_file)
+        + """
   OPTIONAL { ?author ( wdt:P108 | wdt:P463 | wdt:P1416 ) ?organization .
            OPTIONAL { ?organization wdt:P17 ?country . }               
            }
@@ -201,4 +267,6 @@ def get_query_url_for_authors():
   ORDER BY DESC(?article_count)
 
   """
-  return render_url(query_7)
+    )
+    return render_url(query_7)
+
