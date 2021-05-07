@@ -79,6 +79,7 @@ def get_selector(yaml_file):
         gender_selector = ""
 
     event = yaml_file["restriction"]["event"]
+
     if event is not None:
 
         # P823 - speaker
@@ -96,12 +97,27 @@ def get_selector(yaml_file):
     else:
         event_selector = ""
 
+    author_is_topic_of = yaml_file["restriction"]["author_is_topic_of"]
+
+    if author_is_topic_of is not None:
+        author_is_topic_of_selector = (
+            """
+        VALUES ?biographical_work {"""
+            + format_with_prefix(author_is_topic_of)
+            + """}
+        ?biographical_work wdt:P921 ?author.
+        """
+        )
+    else:
+        author_is_topic_of_selector = ""
+
     selector = (
         field_of_work_selector
         + topic_of_work_selector
         + region_selector
-        + event_selector
         + gender_selector
+        + event_selector
+        + author_is_topic_of_selector
         + """
     ?work wdt:P50 ?author.
     """

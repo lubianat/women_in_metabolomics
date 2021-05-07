@@ -19,9 +19,9 @@ restriction:
   gender:
   # - Q6581072 # Female
   event:
-    - Q106587263 # 1st Human Cell Atlas Latin America Single Cell RNA-seqData Analysis Workshop 
+  #  - Q106587263 # 1st Human Cell Atlas Latin America Single Cell RNA-seqData Analysis Workshop 
   author_is_topic_of:
-  #  - Q106757464 # Science Super-Heroes: 52 Brazilians and their transformative research
+    - Q106757464 # Science Super-Heroes: 52 Brazilians and their transformative research
 
 sections:
 # - the name of the query: the label of the query
